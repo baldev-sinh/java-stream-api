@@ -10,6 +10,14 @@ public class Lecture2 {
 
   @Test
   public void range() throws Exception {
+    System.out.println("for i");
+    for (int i = 0; i < 10; i++) {
+      System.out.println(i);
+    }
+    System.out.println("exclusive");
+    IntStream.range(0, 10).forEach(System.out :: println);
+    System.out.println("inclusive");
+    IntStream.rangeClosed(0,10).forEach(System.out :: println);
 
   }
 
@@ -17,13 +25,21 @@ public class Lecture2 {
   public void rangeIteratingLists() throws Exception {
     List<Person> people = MockData.getPeople();
 
+//    use range(start, end) as list index start with 0 to
+//    avoid index out of bound exception
+    IntStream.range(0, people.size())
+        .forEach(index -> {
+          Person person = people.get(index);
+          System.out.println(person);
+        });
+
   }
 
   @Test
   public void intStreamIterate() throws Exception {
-      IntStream.iterate(0, operand -> operand + 1)
-          .filter(number -> number % 2 == 0)
-          .limit(20)
-          .forEach(System.out::println);
+     IntStream.iterate(0, operand -> operand + 1)
+         .filter(value -> value % 2 == 0)
+         .limit(20)
+         .forEach(System.out :: println);
   }
 }
