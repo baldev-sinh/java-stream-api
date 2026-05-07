@@ -1,6 +1,7 @@
 package exercise.highestsalary;
 
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -10,12 +11,14 @@ public class Main {
   public static void main(String[] args) {
 
     List<Employee> list = List.of(
-        new Employee("Baldev", "PS", 500000),
-        new Employee("Nikhil", "HR", 200000),
-        new Employee("Nimesh", "Finance", 100000),
-        new Employee("Rohan", "PS", 900000),
-        new Employee("Arpit", "PS", 950000),
-        new Employee("Kiran", "Finance", 900000)
+        new Employee("Baldev", "PS", 85000),
+        new Employee("Nikhil", "HR", 51000),
+        new Employee("Yashraj", "HR", 50000),
+        new Employee("Shubham", "HR", 51000),
+        new Employee("Nimesh", "Finance", 10000),
+        new Employee("Rohan", "PS", 90000),
+        new Employee("Arpit", "PS", 95000),
+        new Employee("Kiran", "Finance", 90000)
     );
 
     System.out.println("Top 3 Person with highest salary");
@@ -27,7 +30,10 @@ public class Main {
     System.out.println("Top 3 highest distinct salary");
     getTop3DistinctHighSalaryOnly(list);
 
-    System.out.println("Top 3 highest distinct salary per department");
+    System.out.println("Top 3 highest salary per department");
+    getTop3HighSalaryPerDepartment(list);
+
+    System.out.println("Top 3 distinct highest salary per department");
     getTop3DistinctHighSalaryPerDepartment(list);
 
   }
@@ -62,29 +68,57 @@ public class Main {
     result.forEach(System.out::println);
   }
 
-  private static void getTop3DistinctHighSalaryPerDepartment(List<Employee> empList) {
-    Map<String, List<Employee>> result =
-        empList.stream()
-            .collect(Collectors.groupingBy(
-                Employee::getDept,
-                Collectors.collectingAndThen(
-                    Collectors.toList(),
-                    list -> list.stream()
-                        .sorted(Comparator.comparing(Employee::getSalary).reversed())
-                        .limit(3)
-                        .toList()
-                )
-            ));
+  private static void getTop3HighSalaryPerDepartment(List<Employee> empList) {
 
-    result.forEach((s, employees) -> {
-      System.out.print(s + " -> ");
-      List<String> empNames = employees.stream()
-          .collect(
-              Collectors.mapping(Employee::getName, Collectors.toList())
-          );
-      System.out.println(empNames);
+    Map<String, List<String>> result = empList.stream()
+        .filter(employee -> employee.getSalary() > 50000)
+        .collect(Collectors.groupingBy(
+            Employee::getDept,
+            Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> list.stream()
+                    .sorted(Comparator.comparing(Employee::getSalary).reversed())
+                    .limit(3)
+                    .map(Employee::getName)
+                    .toList()
+            )
+        ));
+
+    result.forEach((dept, names) -> {
+      System.out.println(dept + " -> " + names);
+    });
+  }
+
+  private static void getTop3DistinctHighSalaryPerDepartment(List<Employee> empList) {
+
+    Map<String, List<String>> collect = empList.stream()
+        .filter(emp -> emp.getSalary() > 50000)
+        .collect(Collectors.groupingBy(
+            Employee::getDept,
+            Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> list.stream()
+                    .sorted(Comparator.comparing(Employee::getSalary).reversed())
+                    .collect(
+                        Collectors.toMap(
+                            Employee::getSalary,
+                            Employee::getName,
+                            (existing, duplicate) -> existing,
+                            LinkedHashMap::new
+                        )
+                    )
+                    .values()
+                    .stream()
+                    .limit(3)
+                    .toList()
+            )
+        ));
+
+    collect.forEach((dept, distinctNames) -> {
+      System.out.println(dept + " -> " + distinctNames);
     });
 
   }
+
 
 }
