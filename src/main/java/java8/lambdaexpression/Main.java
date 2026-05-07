@@ -1,4 +1,4 @@
-package exercise.lambdaexpression;
+package java8.lambdaexpression;
 
 import java.util.Arrays;
 import java.util.List;
