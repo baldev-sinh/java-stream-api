@@ -11,12 +11,18 @@ public class HighestPaidEmpPerDept {
   public static void main(String[] args) {
     List<Employee> employees = DummyData.dummyData();
 
+    System.out.println("With Optional");
     Map<String, Optional<Employee>> collect1 = employees.stream()
         .collect(Collectors.groupingBy(
             Employee::getDepartment,
             Collectors.maxBy(Comparator.comparing(Employee::getSalary))
         ));
 
+    collect1.forEach((dept, emp) -> {
+      System.out.println(dept + "-> " + emp.get().getName() + " Salary: " + emp.get().getSalary());
+    });
+
+    System.out.println("Without optional");
     Map<String, Employee> collect = employees.stream()
         .collect(Collectors.groupingBy(
             Employee::getDepartment,
